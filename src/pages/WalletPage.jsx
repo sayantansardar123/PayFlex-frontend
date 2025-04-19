@@ -15,7 +15,7 @@ function WalletPage() {
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft size={24} />
           </button>
-          <h1 className="text-xl font-bold">PhonePe Wallet</h1>
+          <h1 className="text-xl font-bold">PayFlex Wallet</h1>
           <button className="p-2 -mr-2">
             <HelpCircle size={24} className="text-gray-600" />
           </button>

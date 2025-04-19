@@ -18,7 +18,7 @@ function RewardsSection() {
             <Gift size={18} className="text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-white font-semibold">PhonePe Rewards</h3>
+            <h3 className="text-white font-semibold">PayFlex Rewards</h3>
             <p className="text-xs text-white text-opacity-80">Collect rewards on every transaction</p>
           </div>
         </div>

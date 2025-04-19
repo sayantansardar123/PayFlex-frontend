@@ -18,7 +18,7 @@ function BalanceCard() {
             <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-2">
               <Wallet size={16} className="text-white" />
             </div>
-            <span className="text-white text-sm font-medium">PhonePe Balance</span>
+            <span className="text-white text-sm font-medium">PayFlex Balance</span>
           </div>
           <button 
             onClick={() => setShowBalance(!showBalance)}
