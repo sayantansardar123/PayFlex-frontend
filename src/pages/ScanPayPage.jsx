@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ArrowLeft, QrCode, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import Webcam from 'react-webcam';
 
 function ScanPayPage() {
   const navigate = useNavigate();
   const [showAmountInput, setShowAmountInput] = useState(false);
   const [amount, setAmount] = useState('');
+  const webcamRef = useRef(null);
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,8 +18,13 @@ function ScanPayPage() {
   };
 
   const handleScanComplete = () => {
-    // Simulating QR scan completion
     setShowAmountInput(true);
+  };
+
+  const videoConstraints = {
+    width: 720,
+    height: 720,
+    facingMode: "environment"
   };
 
   if (!showAmountInput) {
@@ -29,7 +36,7 @@ function ScanPayPage() {
               <ArrowLeft size={24} />
             </button>
             <h1 className="text-white text-lg font-semibold">Scan QR Code</h1>
-            <button className="text-white">
+            <button onClick={() => navigate(-1)} className="text-white">
               <X size={24} />
             </button>
           </div>
@@ -37,6 +44,13 @@ function ScanPayPage() {
 
         <div className="flex-1 flex flex-col items-center justify-center p-4">
           <div className="relative w-72 h-72 mb-8">
+            <Webcam
+              ref={webcamRef}
+              audio={false}
+              screenshotFormat="image/jpeg"
+              videoConstraints={videoConstraints}
+              className="absolute inset-0 w-full h-full rounded-xl"
+            />
             <div className="absolute inset-0 border-2 border-white/30 rounded-xl"></div>
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-48 h-0.5 bg-purple-500 animate-scan"></div>
