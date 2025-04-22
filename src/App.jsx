@@ -24,7 +24,7 @@ function AppContent() {
   
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="relative max-w-md w-full h-[700px] bg-white shadow-lg rounded-xl overflow-hidden">
+      <div className="relative max-w-md w-full h-[800px] bg-white shadow-lg rounded-xl overflow-hidden">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<HomePage />} />

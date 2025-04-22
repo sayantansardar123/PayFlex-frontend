@@ -58,7 +58,6 @@ function ProfilePage() {
   }, [isDarkMode]);
 
   const handleLogout = () => {
-    // Add logout logic here
     navigate('/');
   };
 
