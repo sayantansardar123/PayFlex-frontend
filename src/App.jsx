@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import HistoryPage from './pages/HistoryPage';
 import ScanPayPage from './pages/ScanPayPage';
@@ -21,12 +22,12 @@ import './index.css';
 
 function AppContent() {
   const location = useLocation();
-  
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="relative max-w-md w-full h-[800px] bg-white shadow-lg rounded-xl overflow-hidden">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
+            <Route path="/auth" element={<AuthPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/scan-pay" element={<ScanPayPage />} />
