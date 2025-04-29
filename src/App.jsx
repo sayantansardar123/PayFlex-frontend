@@ -24,6 +24,7 @@ function AppContent() {
   const location = useLocation();
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      {/* w-full max-w-md h-[98vh] */}
       <div className="relative max-w-md w-full h-[800px] bg-white shadow-lg rounded-xl overflow-hidden">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>

@@ -203,7 +203,7 @@ function ProfilePage({ onClose, isModal = false }) {
       <motion.div
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="w-full max-w-md h-[100vh] overflow-hidden  shadow-xl"
+        className="w-full max-w-md h-[98vh] overflow-hidden rounded-2xl shadow-xl"
       >
         {content}
       </motion.div>

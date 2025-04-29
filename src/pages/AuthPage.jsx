@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Send } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios';
 
 function AuthPage() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    phone: '',
+    otp: '',
     password: '',
     confirmPassword: '',
   });
@@ -20,22 +23,96 @@ function AuthPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const sendOtp = async () => {
+    if (!formData.email) {
+      toast.error('Please enter an email address.');
+      return;
+    }
+    try {
+      const { data } = await axios.post('http://localhost:5000/mail/send-otp', { email: formData.email });
+      toast.success(data.message);
+      setOtpSent(true);
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || 'Failed to send OTP.');
+    }
+  };
 
-    toast.success('Logged in successfully!');
-    navigate('/');
+  const verifyOtp = async () => {
+    if (!formData.otp) {
+      toast.error('Please enter OTP.');
+      return;
+    }
+    try {
+      const { data } = await axios.post('http://localhost:5000/mail/verify-otp', { email: formData.email, otp: formData.otp });
+      toast.success(data.message);
+      setOtpVerified(true);
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || 'Invalid OTP.');
+    }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
+    if (!otpVerified) {
+      return toast.error('Please verify your OTP first.');
+    }
     if (formData.password !== formData.confirmPassword) {
       return toast.error('Passwords do not match!');
     }
+    try {
+      const { fullName, email, password } = formData;
+      const { data } = await axios.post('http://localhost:5000/auth/register', {
+        username: fullName,
+        email,
+        password,
+      });
 
-    toast.success('Registered successfully!');
-    navigate('/');
+      if (data.success) {
+        toast.success('Account registered successfully.');
+        setIsLogin(true);
+        setFormData({
+          fullName: '',
+          email: '',
+          otp: '',
+          password: '',
+          confirmPassword: '',
+        });
+        setOtpSent(false);
+        setOtpVerified(false);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Registration failed");
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const { email, password } = formData;
+      const { data } = await axios.post('http://localhost:5000/auth/login', { email, password });
+
+      if (data.success) {
+        toast.success(data.message);
+        localStorage.setItem('token', data.token);
+        navigate('/');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      if (error.response?.data?.message === "User not register") {
+        toast.error('Email not registered.');
+      } else if (error.response?.data?.message === "Password Invalid") {
+        toast.error('Invalid password.');
+      } else {
+        toast.error(error.response?.data?.message || "Login failed");
+      }
+    }
   };
 
   return (
@@ -44,115 +121,190 @@ function AuthPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isLogin ? 'Welcome back!' : 'Create your account'}
+            {isLogin ? 'Welcome Back!' : 'Create Your Account'}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setFormData({
+                  fullName: '',
+                  email: '',
+                  otp: '',
+                  password: '',
+                  confirmPassword: '',
+                });
+                setOtpSent(false);
+                setOtpVerified(false);
+              }}
               className="font-medium text-purple-600 hover:text-purple-500"
             >
-              {isLogin ? 'Sign up' : 'Sign in'}
+              {isLogin ? 'Sign Up' : 'Sign In'}
             </button>
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={isLogin ? handleLogin : handleRegister}>
           <div className="rounded-md shadow-sm space-y-4">
+
+            {/* Sign Up Fields */}
             {!isLogin && (
-              <div className="relative">
-                <label htmlFor="fullName" className="sr-only">Full Name</label>
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  required
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                  placeholder="Full Name"
-                />
-              </div>
+              <>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    required
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                    placeholder="Full Name"
+                  />
+                </div>
+
+                {/* Email and Send OTP */}
+                <div className="flex gap-2 items-center">
+                  <div className="relative flex-1">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                      placeholder="Email Address"
+                    />
+                  </div>
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.9 }}
+                    onClick={sendOtp}
+                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
+                  >
+                    <Send size={18} />
+                  </motion.button>
+                </div>
+
+                {/* OTP and Verify OTP */}
+                {otpSent && !otpVerified && (
+                  <div className="flex gap-2 items-center">
+                    <input
+                      id="otp"
+                      name="otp"
+                      type="text"
+                      required
+                      value={formData.otp}
+                      onChange={handleChange}
+                      className="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                      placeholder="Enter OTP"
+                    />
+                    <motion.button
+                      type="button"
+                      whileTap={{ scale: 0.9 }}
+                      onClick={verifyOtp}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
+                    >
+                      Verify
+                    </motion.button>
+                  </div>
+                )}
+
+                {/* Passwords */}
+                {otpVerified && (
+                  <>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                      <input
+                        id="password"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        required
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                        placeholder="Password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                      <input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type={showPassword ? "text" : "password"}
+                        required
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                        placeholder="Confirm Password"
+                      />
+                    </div>
+                  </>
+                )}
+              </>
             )}
 
-            <div className="relative">
-              <label htmlFor="email" className="sr-only">Email address</label>
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-              />
-            </div>
+            {/* Sign In Fields */}
+            {isLogin && (
+              <>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                    placeholder="Email Address"
+                  />
+                </div>
 
-            <div className="relative">
-              <label htmlFor="phone" className="sr-only">Phone Number</label>
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                required
-                value={formData.phone}
-                onChange={handleChange}
-                className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                placeholder="Phone Number"
-              />
-            </div>
-
-            <div className="relative">
-              <label htmlFor="password" className="sr-only">Password</label>
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-
-            {!isLogin && (
-              <div className="relative">
-                <label htmlFor="confirmPassword" className="sr-only">Confirm Password</label>
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                  placeholder="Confirm Password"
-                />
-              </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                    placeholder="Password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </>
             )}
           </div>
 
+          {/* Submit Button */}
           <div>
             <motion.button
               whileTap={{ scale: 0.95 }}
               type="submit"
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
             >
-              {isLogin ? 'Sign in' : 'Sign up'}
+              {isLogin ? 'Sign In' : 'Sign Up'}
             </motion.button>
           </div>
         </form>

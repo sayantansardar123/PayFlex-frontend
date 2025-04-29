@@ -41,7 +41,7 @@ function Header() {
               </div>
               <div>
                 <div className="text-sm font-medium flex items-center">
-                  Alex Johnson <ChevronDown size={16} className="ml-1" />
+                  Sayantan Sardar <ChevronDown size={16} className="ml-1" />
                 </div>
                 <div className={`text-xs ${scrolled ? 'text-purple-200' : 'text-gray-500'}`}>
                   Welcome back!
