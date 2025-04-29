@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Eye, EyeOff, Send } from 'lucide-react';
-import toast, { Toaster } from 'react-hot-toast';
-import axios from 'axios';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Mail, Lock, User, Eye, EyeOff, Send } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
 
 function AuthPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromNavbar = location.state?.fromNavbar === false;
+
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    otp: '',
-    password: '',
-    confirmPassword: '',
+    fullName: "",
+    email: "",
+    otp: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const handleChange = (e) => {
@@ -25,59 +28,61 @@ function AuthPage() {
 
   const sendOtp = async () => {
     if (!formData.email) {
-      toast.error('Please enter an email address.');
+      toast.error("Please enter an email address.");
       return;
     }
     try {
-      const { data } = await axios.post('http://localhost:5000/mail/send-otp', { email: formData.email });
+      const { data } = await axios.post("http://localhost:5000/mail/send-otp", {
+        email: formData.email,
+      });
       toast.success(data.message);
       setOtpSent(true);
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || 'Failed to send OTP.');
+      toast.error(error.response?.data?.message || "Failed to send OTP.");
     }
   };
 
   const verifyOtp = async () => {
     if (!formData.otp) {
-      toast.error('Please enter OTP.');
+      toast.error("Please enter OTP.");
       return;
     }
     try {
-      const { data } = await axios.post('http://localhost:5000/mail/verify-otp', { email: formData.email, otp: formData.otp });
+      const { data } = await axios.post(
+        "http://localhost:5000/mail/verify-otp",
+        { email: formData.email, otp: formData.otp }
+      );
       toast.success(data.message);
       setOtpVerified(true);
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || 'Invalid OTP.');
+      toast.error(error.response?.data?.message || "Invalid OTP.");
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (!otpVerified) {
-      return toast.error('Please verify your OTP first.');
-    }
-    if (formData.password !== formData.confirmPassword) {
-      return toast.error('Passwords do not match!');
-    }
+    if (!otpVerified) return toast.error("Please verify your OTP first.");
+    if (formData.password !== formData.confirmPassword)
+      return toast.error("Passwords do not match!");
     try {
       const { fullName, email, password } = formData;
-      const { data } = await axios.post('http://localhost:5000/auth/register', {
+      const { data } = await axios.post("http://localhost:5000/auth/register", {
         username: fullName,
         email,
         password,
       });
 
       if (data.success) {
-        toast.success('Account registered successfully.');
+        toast.success("Account registered successfully.");
         setIsLogin(true);
         setFormData({
-          fullName: '',
-          email: '',
-          otp: '',
-          password: '',
-          confirmPassword: '',
+          fullName: "",
+          email: "",
+          otp: "",
+          password: "",
+          confirmPassword: "",
         });
         setOtpSent(false);
         setOtpVerified(false);
@@ -94,21 +99,24 @@ function AuthPage() {
     e.preventDefault();
     try {
       const { email, password } = formData;
-      const { data } = await axios.post('http://localhost:5000/auth/login', { email, password });
+      const { data } = await axios.post("http://localhost:5000/auth/login", {
+        email,
+        password,
+      });
 
       if (data.success) {
         toast.success(data.message);
-        localStorage.setItem('token', data.token);
-        navigate('/');
+        localStorage.setItem("token", data.token);
+        navigate("/home", { state: { fromNavbar: true } });
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       console.error(error);
       if (error.response?.data?.message === "User not register") {
-        toast.error('Email not registered.');
+        toast.error("Email not registered.");
       } else if (error.response?.data?.message === "Password Invalid") {
-        toast.error('Invalid password.');
+        toast.error("Invalid password.");
       } else {
         toast.error(error.response?.data?.message || "Login failed");
       }
@@ -116,12 +124,18 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div
+      className={`${
+        fromNavbar
+          ? "bg-white p-4"
+          : "min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
+      }`}
+    >
       <Toaster position="top-center" />
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isLogin ? 'Welcome Back!' : 'Create Your Account'}
+            {isLogin ? "Welcome Back!" : "Create Your Account"}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
@@ -129,30 +143,34 @@ function AuthPage() {
               onClick={() => {
                 setIsLogin(!isLogin);
                 setFormData({
-                  fullName: '',
-                  email: '',
-                  otp: '',
-                  password: '',
-                  confirmPassword: '',
+                  fullName: "",
+                  email: "",
+                  otp: "",
+                  password: "",
+                  confirmPassword: "",
                 });
                 setOtpSent(false);
                 setOtpVerified(false);
               }}
               className="font-medium text-purple-600 hover:text-purple-500"
             >
-              {isLogin ? 'Sign Up' : 'Sign In'}
+              {isLogin ? "Sign Up" : "Sign In"}
             </button>
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={isLogin ? handleLogin : handleRegister}>
+        <form
+          className="mt-8 space-y-6"
+          onSubmit={isLogin ? handleLogin : handleRegister}
+        >
           <div className="rounded-md shadow-sm space-y-4">
-
-            {/* Sign Up Fields */}
             {!isLogin && (
               <>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <User
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={20}
+                  />
                   <input
                     id="fullName"
                     name="fullName"
@@ -165,10 +183,12 @@ function AuthPage() {
                   />
                 </div>
 
-                {/* Email and Send OTP */}
                 <div className="flex gap-2 items-center">
                   <div className="relative flex-1">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                    <Mail
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={20}
+                    />
                     <input
                       id="email"
                       name="email"
@@ -190,7 +210,6 @@ function AuthPage() {
                   </motion.button>
                 </div>
 
-                {/* OTP and Verify OTP */}
                 {otpSent && !otpVerified && (
                   <div className="flex gap-2 items-center">
                     <input
@@ -214,11 +233,13 @@ function AuthPage() {
                   </div>
                 )}
 
-                {/* Passwords */}
                 {otpVerified && (
                   <>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                      <Lock
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                        size={20}
+                      />
                       <input
                         id="password"
                         name="password"
@@ -234,12 +255,19 @@ function AuthPage() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                       >
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        {showPassword ? (
+                          <EyeOff size={20} />
+                        ) : (
+                          <Eye size={20} />
+                        )}
                       </button>
                     </div>
 
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                      <Lock
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                        size={20}
+                      />
                       <input
                         id="confirmPassword"
                         name="confirmPassword"
@@ -256,11 +284,13 @@ function AuthPage() {
               </>
             )}
 
-            {/* Sign In Fields */}
             {isLogin && (
               <>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <Mail
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={20}
+                  />
                   <input
                     id="email"
                     name="email"
@@ -274,7 +304,10 @@ function AuthPage() {
                 </div>
 
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <Lock
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={20}
+                  />
                   <input
                     id="password"
                     name="password"
@@ -296,15 +329,13 @@ function AuthPage() {
               </>
             )}
           </div>
-
-          {/* Submit Button */}
           <div>
             <motion.button
               whileTap={{ scale: 0.95 }}
               type="submit"
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
             >
-              {isLogin ? 'Sign In' : 'Sign Up'}
+              {isLogin ? "Sign In" : "Sign Up"}
             </motion.button>
           </div>
         </form>

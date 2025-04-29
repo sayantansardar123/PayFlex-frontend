@@ -22,14 +22,16 @@ import './index.css';
 
 function AppContent() {
   const location = useLocation();
+
+  const showBottomNavPaths = ['/home', '/history', '/wallet', '/profile'];
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      {/* w-full max-w-md h-[98vh] */}
       <div className="relative max-w-md w-full h-[800px] bg-white shadow-lg rounded-xl overflow-hidden">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
-            <Route path="/login" element={<AuthPage authTab="Login" key="login" />} />
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<AuthPage />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/scan-pay" element={<ScanPayPage />} />
             <Route path="/pin-entry" element={<PinEntryPage />} />
@@ -45,8 +47,12 @@ function AppContent() {
             <Route path="/manage-payments" element={<ManagePaymentsPage />} />
           </Routes>
         </AnimatePresence>
-        {location.pathname === '/' && <FloatingActionButton />}
-        {['/', '/history', '/finance', '/profile'].includes(location.pathname) && <BottomNavigation />}
+
+        {/* FloatingActionButton is shown only on HomePage */}
+        {location.pathname === '/home' && <FloatingActionButton />}
+
+        {/* BottomNavigation is shown on selected pages */}
+        {showBottomNavPaths.includes(location.pathname) && <BottomNavigation />}
       </div>
     </div>
   );

@@ -37,7 +37,7 @@ function BottomNavigation() {
   const location = useLocation();
   
   const navItems = [
-    { id: 'home', icon: <Home size={20} />, label: 'Home', path: '/' },
+    { id: 'home', icon: <Home size={20} />, label: 'Home', path: '/home' },
     { id: 'history', icon: <Repeat size={20} />, label: 'History', path: '/history' },
     { id: 'scan', icon: <QrCode size={20} />, label: 'Scan & Pay', path: '/scan-pay' },
     { id: 'finance', icon: <PieChart size={20} />, label: 'Finance', path: '/finance' },
