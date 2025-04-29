@@ -28,7 +28,7 @@ function AppContent() {
       <div className="relative max-w-md w-full h-[800px] bg-white shadow-lg rounded-xl overflow-hidden">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
-            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/login" element={<AuthPage authTab="Login" key="login" />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/scan-pay" element={<ScanPayPage />} />
