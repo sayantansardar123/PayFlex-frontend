@@ -10,6 +10,8 @@ function AuthPage() {
   const location = useLocation();
   const fromNavbar = location.state?.fromNavbar === false;
 
+  const baseURL = import.meta.env.VITE_BASEURL;
+
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -32,9 +34,13 @@ function AuthPage() {
       return;
     }
     try {
-      const { data } = await axios.post("http://localhost:5000/mail/send-otp", {
-        email: formData.email,
-      });
+      const { data } = await axios.post(
+        `${baseURL}mail/send-otp`,
+        {
+          email: formData.email,
+        },
+        { withCredentials: true }
+      );
       toast.success(data.message);
       setOtpSent(true);
     } catch (error) {
@@ -50,8 +56,9 @@ function AuthPage() {
     }
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/mail/verify-otp",
-        { email: formData.email, otp: formData.otp }
+        `${baseURL}mail/verify-otp`,
+        { email: formData.email, otp: formData.otp },
+        { withCredentials: true }
       );
       toast.success(data.message);
       setOtpVerified(true);
@@ -68,11 +75,15 @@ function AuthPage() {
       return toast.error("Passwords do not match!");
     try {
       const { fullName, email, password } = formData;
-      const { data } = await axios.post("http://localhost:5000/auth/register", {
-        username: fullName,
-        email,
-        password,
-      });
+      const { data } = await axios.post(
+        `${baseURL}auth/register`,
+        {
+          username: fullName,
+          email,
+          password,
+        },
+        { withCredentials: true }
+      );
 
       if (data.success) {
         toast.success("Account registered successfully.");
@@ -95,15 +106,21 @@ function AuthPage() {
     }
   };
 
+  // const baseURL = import.meta.env.VITE_BASEURL;
+  // const baseURL = process.env.REACT_APP_BASEURL;
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const { email, password } = formData;
-      const { data } = await axios.post("http://localhost:5000/auth/login", {
-        email,
-        password,
-      });
-
+      console.log("Base URL:", baseURL);
+      const { data } = await axios.post(
+        `${baseURL}auth/login`,
+        {
+          email,
+          password,
+        },
+        { withCredentials: true }
+      );
       if (data.success) {
         toast.success(data.message);
         localStorage.setItem("token", data.token);
