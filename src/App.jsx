@@ -23,7 +23,7 @@ import './index.css';
 function AppContent() {
   const location = useLocation();
 
-  const showBottomNavPaths = ['/home', '/history', '/wallet', '/profile'];
+  const showBottomNavPaths = ['/home', '/history', '/wallet', '/profile','/finance'];
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
