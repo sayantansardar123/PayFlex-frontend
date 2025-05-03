@@ -51,7 +51,12 @@ function ProfilePage({ onClose, isModal = false }) {
     else document.documentElement.classList.remove('dark');
   }, [isDarkMode]);
 
-  const handleLogout = () => navigate('/');
+  // const handleLogout = () => navigate('/');
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Remove token on logout
+    navigate('/', { replace: true }); // Redirect to AuthPage
+  };
+  
   const handleBack = () => onClose?.();
 
   const menuItems = [
