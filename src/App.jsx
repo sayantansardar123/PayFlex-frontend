@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
@@ -22,8 +22,17 @@ import './index.css';
 
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const showBottomNavPaths = ['/home', '/history', '/wallet', '/profile','/finance'];
+  // Auto-redirect if token exists (user is already logged in) --
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token && location.pathname === '/') {
+      navigate('/home', { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
+  const showBottomNavPaths = ['/home', '/history', '/wallet', '/profile', '/finance'];
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -48,10 +57,7 @@ function AppContent() {
           </Routes>
         </AnimatePresence>
 
-        {/* FloatingActionButton is shown only on HomePage */}
         {location.pathname === '/home' && <FloatingActionButton />}
-
-        {/* BottomNavigation is shown on selected pages */}
         {showBottomNavPaths.includes(location.pathname) && <BottomNavigation />}
       </div>
     </div>

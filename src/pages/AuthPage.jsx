@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Mail, Lock, User, Eye, EyeOff, Send } from "lucide-react";
@@ -11,6 +11,15 @@ function AuthPage() {
   const fromNavbar = location.state?.fromNavbar === false;
 
   const baseURL = import.meta.env.VITE_BASEURL;
+
+  // Auto-redirect if token exists (user is already logged in)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/home', { replace: true });
+    }
+  }, [navigate]);
+  
 
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
