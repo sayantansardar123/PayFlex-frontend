@@ -18,6 +18,9 @@ import ReceiveMoneyPage from './pages/ReceiveMoneyPage';
 import ManagePaymentsPage from './pages/ManagePaymentsPage';
 import BottomNavigation from './components/BottomNavigation';
 import FloatingActionButton from './components/FloatingActionButton';
+
+import QRScannerTest from './pages/QRScannerTest';
+
 import './index.css';
 
 function AppContent() {
@@ -54,6 +57,8 @@ function AppContent() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/receive-money" element={<ReceiveMoneyPage />} />
             <Route path="/manage-payments" element={<ManagePaymentsPage />} />
+            <Route path="/qrscanner-test" element={<QRScannerTest />} />
+
           </Routes>
         </AnimatePresence>
 

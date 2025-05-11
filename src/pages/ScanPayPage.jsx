@@ -1,14 +1,26 @@
 import React, { useState, useRef } from 'react';
-import { ArrowLeft, QrCode, X } from 'lucide-react';
+import { ArrowLeft, QrCode, X, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import Webcam from 'react-webcam';
+//import Webcam from 'react-webcam';
+import QrScanner from "react-qr-scanner";
+
 
 function ScanPayPage() {
   const navigate = useNavigate();
   const [showAmountInput, setShowAmountInput] = useState(false);
   const [amount, setAmount] = useState('');
   const webcamRef = useRef(null);
+  const [qrData, setQRData] = useState("No result");
+  const [userData, setUserData] = useState({
+    upiId: '',
+    userId: ''
+  });
+
+  const previewStyle = {
+    height: 320,
+    width: 320,
+  };
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,11 +33,43 @@ function ScanPayPage() {
     setShowAmountInput(true);
   };
 
-  const videoConstraints = {
+  const handleScan = (result) => {
+    if (result) {
+      //console.log(result.text);
+      setQRData(result.text || result);
+      getUpiIdFromQRCode(result.text);
+      setShowAmountInput(true);
+    }
+  };
+  
+  const handleError = (err) => {
+    console.error(err);
+  };
+
+  const getUpiIdFromQRCode = (text) => {
+    //const upiPattern = /(?<=upi=)\d+(?=@)/;
+    const upiPattern = /(?<=upi=)[^&]+/;
+    const useridPattern = /(?<=userid=)[a-f0-9]+/;
+    const upiText = text.match(upiPattern);
+    const userIdText = text.match(useridPattern);
+
+    if(upiText) console.log('upiId: ', upiText[0]);
+    if(userIdText) console.log('userId: ', userIdText[0]);
+
+    if(upiText && userIdText) {
+      setUserData({
+        upiId: upiText[0],
+        userId: userIdText[0]
+      });
+    }
+  }
+
+  
+  /* const videoConstraints = {
     width: 720,
     height: 720,
     facingMode: "environment"
-  };
+  }; */
 
   if (!showAmountInput) {
     return (
@@ -44,12 +88,18 @@ function ScanPayPage() {
 
         <div className="flex-1 flex flex-col items-center justify-center p-4">
           <div className="relative w-72 h-72 mb-8">
-            <Webcam
+            {/* <Webcam
               ref={webcamRef}
               audio={false}
               screenshotFormat="image/jpeg"
               videoConstraints={videoConstraints}
               className="absolute inset-0 w-full h-full rounded-xl"
+            /> */}
+            <QrScanner
+              delay={1000}
+              style={previewStyle}
+              onError={handleError}
+              onScan={handleScan}
             />
             <div className="absolute inset-0 border-2 border-white/30 rounded-xl"></div>
             <div className="absolute inset-0 flex items-center justify-center">
@@ -64,6 +114,8 @@ function ScanPayPage() {
           <p className="text-white/70 text-center mb-4">
             Align QR code within the frame to scan
           </p>
+
+          {/* <p className="text-white/70 text-center mb-4">{qrData}</p> */}
           
           <motion.button
             whileTap={{ scale: 0.95 }}
@@ -94,6 +146,18 @@ function ScanPayPage() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-xl p-6 shadow-sm"
         >
+          
+
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-3 overflow-hidden">
+              <User size={30} className="text-purple-700" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold flex items-center">{userData.userId}</h2>
+              <div className="block text-sm text-gray-600">UpiId: {userData.upiId}</div>
+            </div>
+          </div>
+
           <div className="flex justify-center mb-6">
             <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center">
               <QrCode size={40} className="text-purple-700" />
