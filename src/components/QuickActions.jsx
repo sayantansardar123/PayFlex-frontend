@@ -35,7 +35,7 @@ function QuickActions() {
     { icon: <Smartphone size={20} />, label: 'Mobile', bgColor: 'bg-purple-500' },
     { icon: <CreditCard size={20} />, label: 'Cards', bgColor: 'bg-indigo-500' },
     { icon: <Zap size={20} />, label: 'Balance', bgColor: 'bg-yellow-500', onClick: () => navigate('/check-balance') },
-    { icon: <Clock size={20} />, label: 'History', bgColor: 'bg-gray-700', onClick: () => navigate('/history/681f7d12e791885f87b254a5') },
+    { icon: <Clock size={20} />, label: 'History', bgColor: 'bg-gray-700', onClick: () => navigate('/history') },
     { icon: <Wallet size={20} />, label: 'Wallet', bgColor: 'bg-green-500', onClick: () => navigate('/wallet') },
     { icon: <Gift size={20} />, label: 'Rewards', bgColor: 'bg-red-500' },
     { icon: <Percent size={20} />, label: 'Offers', bgColor: 'bg-orange-500' },

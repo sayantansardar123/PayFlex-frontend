@@ -18,10 +18,10 @@ import ReceiveMoneyPage from './pages/ReceiveMoneyPage';
 import ManagePaymentsPage from './pages/ManagePaymentsPage';
 import BottomNavigation from './components/BottomNavigation';
 // import FloatingActionButton from './components/FloatingActionButton';
-
 import QRScannerTest from './pages/QRScannerTest';
 
 import './index.css';
+import axios from 'axios';
 
 function AppContent() {
   const location = useLocation();
@@ -30,7 +30,32 @@ function AppContent() {
   // Auto-redirect if token exists (user is already logged in) --
   useEffect(() => {
     const token = localStorage.getItem('token');
+
+    const fetchUserDetails = async () => {
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BASEURL}/api/v1/auth/userdetails`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'auth-token': token,
+            }
+          }
+        );
+        if(data) {
+          console.log('UserDetails: ', data.user);
+          if (!localStorage.getItem('userdata')){
+            localStorage.setItem('userdata', JSON.stringify(data.user));
+          }
+        }
+      } catch(err) {
+        console.error(err);
+      }
+    };
+
     if (token && location.pathname === '/') {
+      // Fetch UserDetails
+      fetchUserDetails();
       navigate('/home', { replace: true });
     }
   }, [location.pathname, navigate]);
@@ -44,7 +69,7 @@ function AppContent() {
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<AuthPage />} />
             <Route path="/home" element={<HomePage />} />
-            <Route path="/history/:userId" element={<HistoryPage />} />
+            <Route path="/history" element={<HistoryPage />} />
             <Route path="/scan-pay" element={<ScanPayPage />} />
             <Route path="/pin-entry" element={<PinEntryPage />} />
             <Route path="/payment-success" element={<PaymentSuccessPage />} />

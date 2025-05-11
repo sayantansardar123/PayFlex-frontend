@@ -45,7 +45,7 @@ function AuthPage() {
     }
     try {
       const { data } = await axios.post(
-        `${baseURL}api/v1/mail/send-otp`,
+        `${baseURL}/api/v1/mail/send-otp`,
         {
           email: formData.email,
         },
@@ -66,7 +66,7 @@ function AuthPage() {
     }
     try {
       const { data } = await axios.post(
-        `${baseURL}api/v1/mail/verify-otp`,
+        `${baseURL}/api/v1/mail/verify-otp`,
         { email: formData.email, otp: formData.otp },
         { withCredentials: true }
       );
@@ -86,7 +86,7 @@ function AuthPage() {
     try {
       const { fullName, email, phone, password } = formData;
       const { data } = await axios.post(
-        `${baseURL}api/v1/auth/register`,
+        `${baseURL}/api/v1/auth/register`,
         {
           username: fullName,
           email,
@@ -126,7 +126,7 @@ function AuthPage() {
       const { email, password } = formData;
       console.log("Base URL:", baseURL);
       const { data } = await axios.post(
-        `${baseURL}api/v1/auth/login`,
+        `${baseURL}/api/v1/auth/login`,
         {
           email,
           password,
@@ -142,7 +142,7 @@ function AuthPage() {
       }
     } catch (error) {
       console.error(error);
-      if (error.response?.data?.message === "User not register") {
+      if (error.response?.data?.message === "User not registered") {
         toast.error("Email not registered.");
       } else if (error.response?.data?.message === "Password Invalid") {
         toast.error("Invalid password.");

@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, SlidersHorizontal, ArrowUpRight, ArrowDownLeft, HelpCircle } from 'lucide-react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 
 function HistoryPage() {
-  const { userId } = useParams();
   const [transactions, setTransactions] = useState([]);
 
   /* const transactions = [
@@ -59,8 +57,9 @@ function HistoryPage() {
   useEffect(() => {
     const fetchTransactionsOfUser = async () => {
       try {
+        const userId = '6820c001d108d7596e5442bd';
         const { data } = await axios.get(
-          `http://localhost:5000/api/v1/transactions/get/${userId}`,
+          `${import.meta.env.VITE_BASEURL}/api/v1/transactions/get/${userId}`,
         );
         if(data) setTransactions(data);
       } catch(err) {
