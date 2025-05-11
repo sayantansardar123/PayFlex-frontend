@@ -38,7 +38,7 @@ function BottomNavigation() {
   
   const navItems = [
     { id: 'home', icon: <Home size={20} />, label: 'Home', path: '/home' },
-    { id: 'history', icon: <Repeat size={20} />, label: 'History', path: '/history' },
+    { id: 'history', icon: <Repeat size={20} />, label: 'History', path: '/history/681f7d12e791885f87b254a5' },
     { id: 'scan', icon: <QrCode size={20} />, label: 'Scan & Pay', path: '/scan-pay' },
     { id: 'finance', icon: <PieChart size={20} />, label: 'Finance', path: '/finance' },
     { id: 'profile', icon: <Settings size={20} />, label: 'Profile', path: '/profile' },

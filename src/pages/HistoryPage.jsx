@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, SlidersHorizontal, ArrowUpRight, ArrowDownLeft, HelpCircle } from 'lucide-react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 function HistoryPage() {
-  const transactions = [
+  const { userId } = useParams();
+  const [transactions, setTransactions] = useState([]);
+
+  /* const transactions = [
     {
       id: 1,
       type: 'debit',
@@ -49,7 +54,22 @@ function HistoryPage() {
       time: '13 Apr 2025',
       status: 'Credited to'
     }
-  ];
+  ]; */
+
+  useEffect(() => {
+    const fetchTransactionsOfUser = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:5000/api/v1/transactions/get/${userId}`,
+        );
+        if(data) setTransactions(data);
+      } catch(err) {
+        console.error(err);
+      }
+    }
+    
+    fetchTransactionsOfUser();
+  }, []);
 
   return (
     <div className="app-container flex flex-col h-full bg-gray-50">
@@ -61,7 +81,7 @@ function HistoryPage() {
           </button>
         </div>
         
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-0">
           <div className="relative flex items-center mb-4">
             <Search size={20} className="absolute left-3 text-gray-400" />
             <input
@@ -110,6 +130,7 @@ function HistoryPage() {
             </motion.div>
           ))}
         </div>
+        <div className="h-[100px]"></div>
       </div>
     </div>
   );

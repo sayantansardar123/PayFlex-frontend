@@ -39,12 +39,12 @@ function AppContent() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="relative max-w-md w-full h-[800px] bg-white shadow-lg rounded-xl overflow-hidden">
+      <div className="relative max-w-md w-full h-[780px] bg-white shadow-lg rounded-xl overflow-hidden">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<AuthPage />} />
             <Route path="/home" element={<HomePage />} />
-            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/history/:userId" element={<HistoryPage />} />
             <Route path="/scan-pay" element={<ScanPayPage />} />
             <Route path="/pin-entry" element={<PinEntryPage />} />
             <Route path="/payment-success" element={<PaymentSuccessPage />} />
