@@ -29,6 +29,7 @@ function AuthPage() {
     fullName: "",
     email: "",
     otp: "",
+    phone:"",
     password: "",
     confirmPassword: "",
   });
@@ -83,12 +84,13 @@ function AuthPage() {
     if (formData.password !== formData.confirmPassword)
       return toast.error("Passwords do not match!");
     try {
-      const { fullName, email, password } = formData;
+      const { fullName, email, phone, password } = formData;
       const { data } = await axios.post(
         `${baseURL}auth/register`,
         {
           username: fullName,
           email,
+          phone,
           password,
         },
         { withCredentials: true }
@@ -101,6 +103,7 @@ function AuthPage() {
           fullName: "",
           email: "",
           otp: "",
+          phone:"",
           password: "",
           confirmPassword: "",
         });
@@ -262,6 +265,24 @@ function AuthPage() {
                 {otpVerified && (
                   <>
                     <div className="relative">
+                      <User
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                        size={20}
+                      />
+                      <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        required
+                        value={formData.phone}
+                        onChange={handleChange}
+                        pattern="[0-9]{10}"
+                        className="appearance-none rounded-lg relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                        placeholder="Phone Number"
+                      />
+                    </div>
+
+                    <div className="relative">
                       <Lock
                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                         size={20}
@@ -288,7 +309,6 @@ function AuthPage() {
                         )}
                       </button>
                     </div>
-
                     <div className="relative">
                       <Lock
                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"

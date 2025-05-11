@@ -17,7 +17,7 @@ import ProfilePage from './pages/ProfilePage';
 import ReceiveMoneyPage from './pages/ReceiveMoneyPage';
 import ManagePaymentsPage from './pages/ManagePaymentsPage';
 import BottomNavigation from './components/BottomNavigation';
-import FloatingActionButton from './components/FloatingActionButton';
+// import FloatingActionButton from './components/FloatingActionButton';
 import './index.css';
 
 function AppContent() {
@@ -36,6 +36,7 @@ function AppContent() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      {/* w-full max-w-md h-[98vh] */}
       <div className="relative max-w-md w-full h-[800px] bg-white shadow-lg rounded-xl overflow-hidden">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
@@ -57,7 +58,7 @@ function AppContent() {
           </Routes>
         </AnimatePresence>
 
-        {location.pathname === '/home' && <FloatingActionButton />}
+        {/* {location.pathname === '/home' && <FloatingActionButton />} */}
         {showBottomNavPaths.includes(location.pathname) && <BottomNavigation />}
       </div>
     </div>
