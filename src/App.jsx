@@ -17,7 +17,7 @@ import ProfilePage from './pages/ProfilePage';
 import ReceiveMoneyPage from './pages/ReceiveMoneyPage';
 import ManagePaymentsPage from './pages/ManagePaymentsPage';
 import BottomNavigation from './components/BottomNavigation';
-import FloatingActionButton from './components/FloatingActionButton';
+// import FloatingActionButton from './components/FloatingActionButton';
 
 import QRScannerTest from './pages/QRScannerTest';
 
@@ -62,7 +62,7 @@ function AppContent() {
           </Routes>
         </AnimatePresence>
 
-        {location.pathname === '/home' && <FloatingActionButton />}
+        {/* {location.pathname === '/home' && <FloatingActionButton />} */}
         {showBottomNavPaths.includes(location.pathname) && <BottomNavigation />}
       </div>
     </div>

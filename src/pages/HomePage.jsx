@@ -6,7 +6,7 @@ import QuickActions from '../components/QuickActions';
 import RecentTransactions from '../components/RecentTransactions';
 import RewardsSection from '../components/RewardsSection';
 import BottomNavigation from '../components/BottomNavigation';
-import FloatingActionButton from '../components/FloatingActionButton';
+// import FloatingActionButton from '../components/FloatingActionButton';
 
 function HomePage() {
   const containerVariants = {
@@ -57,7 +57,7 @@ function HomePage() {
         <div className="h-20"></div>
       </motion.div>
       
-      <FloatingActionButton />
+      {/* <FloatingActionButton /> */}
       <BottomNavigation />
     </div>
   );
