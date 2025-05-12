@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -17,6 +17,8 @@ import {
   Wallet
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { AppContext } from '../AppContext';
+
 
 function ProfilePage({ onClose, isModal = false }) {
   const navigate = useNavigate();
@@ -26,6 +28,7 @@ function ProfilePage({ onClose, isModal = false }) {
     'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
   );
   const fileInputRef = useRef(null);
+  const store = useContext(AppContext);
 
   const handleImageClick = () => fileInputRef.current.click();
   const handleImageChange = (event) => {
@@ -97,7 +100,8 @@ function ProfilePage({ onClose, isModal = false }) {
     <div className={`app-container flex flex-col h-full ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
       {/* Header */}
       <div className={`sticky top-0 z-10 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-        <div className="flex justify-between items-center p-4">
+
+        <div className="flex justify-between items-center pt-4 pl-4 pr-4">
           <button
             onClick={handleBack}
             className="p-2 hover:bg-gray-100 white:hover:bg-gray-700 rounded-full transition"
@@ -130,10 +134,10 @@ function ProfilePage({ onClose, isModal = false }) {
           </div>
           <div className="ml-4">
             <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              Sayantan Sardar
+              {store.user?.username}
             </h2>
             <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              +91 8207208709
+              +91 {store.user?.phone}
             </p>
           </div>
           <button className="ml-auto text-purple-600 font-medium">
@@ -199,6 +203,8 @@ function ProfilePage({ onClose, isModal = false }) {
             Log out
           </motion.button>
         </div>
+
+        <div className="h-[100px]"></div>
       </div>
     </div>
   );

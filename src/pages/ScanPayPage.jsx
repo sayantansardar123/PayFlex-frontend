@@ -4,8 +4,10 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 //import Webcam from 'react-webcam';
 import QrScanner from "react-qr-scanner";
+import axios from 'axios';
 
 import { AppContext } from '../AppContext';
+
 
 
 function ScanPayPage() {
@@ -17,7 +19,8 @@ function ScanPayPage() {
   const [qrData, setQRData] = useState("No result");
   const [userData, setUserData] = useState({
     upiId: '',
-    userId: ''
+    userId: '',
+    userName: ''
   });
 
   useEffect(() => {
@@ -25,6 +28,25 @@ function ScanPayPage() {
       console.log('UserData: ', store.user);
     }
   }, []);
+
+
+  const fetchReceiverName = async (userId) => {
+    //if(userData.userId !== ''){
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BASEURL}/api/v1/auth/username/get/${userId}`
+        );
+        if(data) {
+          setUserData({
+            ...userData,
+            userName: data.username
+          });
+        }
+      } catch(err) {
+        console.error(err);
+      }
+    //}
+  }
 
   const previewStyle = {
     height: 320,
@@ -48,6 +70,8 @@ function ScanPayPage() {
       setQRData(result.text || result);
       getUpiIdFromQRCode(result.text);
       setShowAmountInput(true);
+      //console.log('fetching Receiver Name');
+      
     }
   };
   
@@ -67,10 +91,13 @@ function ScanPayPage() {
 
     if(upiText && userIdText) {
       setUserData({
+        ...userData,
         upiId: upiText[0],
         userId: userIdText[0]
       });
     }
+
+    //fetchReceiverName(userIdText[0]);
   }
 
   
@@ -156,7 +183,6 @@ function ScanPayPage() {
           className="bg-white rounded-xl p-6 shadow-sm"
         >
           
-
           <div className="flex items-center mb-6">
             <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-3 overflow-hidden">
               <User size={30} className="text-purple-700" />

@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ArrowLeft, HelpCircle, ChevronRight, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function CheckBalancePage() {
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+  const [banks, setBanks] = useState([]);
 
-  const banks = [
+  /* const banks = [
     {
       id: '1535',
       name: 'IDFC First Bank',
@@ -19,7 +22,40 @@ function CheckBalancePage() {
       accountNumber: '7483',
       logo: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
     }
-  ];
+  ]; */
+
+  useEffect(() => {
+    const fetchBankAccounts = async () => {
+      try{
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BASEURL}/api/v1/bankaccounts/get`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'auth-token': token,
+            }
+          }
+        );
+        if(data) {
+          setBanks(data);
+        }
+      } catch(err) {
+        console.error(err);
+      }
+    }
+
+    fetchBankAccounts();
+  }, []);
+
+  const handleShowBankBalance = (bank) => {
+    navigate(`/bank-balance/${bank._id}`, {
+      state: {
+        accountNumber: bank._id,
+        name: bank.bankName,
+        balance: bank.balance
+      }
+    });
+  }
 
   return (
     <div className="app-container flex flex-col h-full bg-gray-50">
@@ -42,17 +78,18 @@ function CheckBalancePage() {
           <div className="space-y-4">
             {banks.map((bank) => (
               <motion.button
-                key={bank.id}
+                key={bank._id}
                 className="w-full flex items-center bg-white p-4 rounded-lg"
-                onClick={() => navigate(`/bank-balance/${bank.id}`)}
+                //onClick={() => navigate(`/bank-balance/${bank._id}`, {state})}
+                onClick={() => handleShowBankBalance(bank)}
                 whileTap={{ scale: 0.98 }}
               >
                 <div className="w-12 h-12 bg-gray-100 rounded-full overflow-hidden mr-3">
-                  <img src={bank.logo} alt={bank.name} className="w-full h-full object-cover" />
+                  <img src={bank.logo} alt={bank.bankName} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="font-medium">{bank.name}</div>
-                  <div className="text-gray-500">- {bank.accountNumber}</div>
+                  <div className="font-medium">{bank.bankName}</div>
+                  <div className="text-gray-500">- {bank._id}</div>
                 </div>
                 <ChevronRight size={20} className="text-gray-400" />
               </motion.button>

@@ -100,7 +100,7 @@ function ReceiveMoneyPage() {
 
           <div>
             <h3 className="text-lg font-semibold mb-2">UPI IDs and Numbers</h3>
-            {['sayantansardar2003@ybl', 'sayantansardar2003@ibl', 'sayantansardar2003@axl'].map((id, index) => (
+            {[store.user?.upiId].map((id, index) => (
               <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                 <div>
                   <div className="font-medium">{id}</div>

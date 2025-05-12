@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Bell, Search, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProfilePage from '../pages/ProfilePage';
+import { AppContext } from '../AppContext';
 
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const store = useContext(AppContext);
 
   const profileImage =
     localStorage.getItem('profileImage') ||
@@ -41,7 +43,7 @@ function Header() {
               </div>
               <div>
                 <div className="text-sm font-medium flex items-center">
-                  Sayantan Sardar <ChevronDown size={16} className="ml-1" />
+                  {store.user?.username} <ChevronDown size={16} className="ml-1" />
                 </div>
                 <div className={`text-xs ${scrolled ? 'text-purple-200' : 'text-gray-500'}`}>
                   Welcome back!
@@ -68,11 +70,11 @@ function Header() {
           </div>
         </div>
       </div>
-
-      <AnimatePresence>
+      
+      {showProfile && <ProfilePage onClose={() => setShowProfile(false)} isModal={true} />}
+      {/* <AnimatePresence>
         {showProfile && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -80,8 +82,6 @@ function Header() {
               className="fixed inset-0 bg-black bg-opacity-50 z-40"
               onClick={() => setShowProfile(false)}
             />
-
-            {/* Slide-in profile panel */}
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
@@ -93,7 +93,7 @@ function Header() {
             </motion.div>
           </>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </>
   );
 }

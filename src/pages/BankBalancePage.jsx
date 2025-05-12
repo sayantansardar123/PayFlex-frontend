@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 function BankBalancePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { bankId } = useParams();
   const [showBalance, setShowBalance] = useState(true);
 
   const bankDetails = {
+    name: location.state?.name,
+    balance: location.state?.balance,
+    accountNumber: location.state?.accountNumber
+  };
+
+  /* const bankDetails = {
     '1535': {
       name: 'IDFC First Bank',
       balance: '₹24,500.75',
@@ -19,7 +26,11 @@ function BankBalancePage() {
       balance: '₹12,750.50',
       accountNumber: 'XXXX XXXX 7483'
     }
-  }[bankId] || { name: 'Unknown Bank', balance: '₹0.00', accountNumber: 'XXXX XXXX XXXX' };
+  }[bankId] || { 
+    name: 'Unknown Bank', 
+    balance: '₹0.00', 
+    accountNumber: 'XXXX XXXX XXXX' 
+  }; */
 
   return (
     <div className="app-container flex flex-col h-full bg-gray-50">
