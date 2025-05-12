@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, SlidersHorizontal, ArrowUpRight, ArrowDownLeft, HelpCircle } from 'lucide-react';
 import axios from 'axios';
+import { AppContext } from '../AppContext';
 
 function HistoryPage() {
   const [transactions, setTransactions] = useState([]);
+  const store = useContext(AppContext);
 
   /* const transactions = [
     {
@@ -57,7 +59,7 @@ function HistoryPage() {
   useEffect(() => {
     const fetchTransactionsOfUser = async () => {
       try {
-        const userId = '6820c001d108d7596e5442bd';
+        const userId = store.user._id;
         const { data } = await axios.get(
           `${import.meta.env.VITE_BASEURL}/api/v1/transactions/get/${userId}`,
         );

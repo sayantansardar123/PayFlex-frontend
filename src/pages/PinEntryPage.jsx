@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { AppContext } from '../AppContext';
+import toast, { Toaster } from "react-hot-toast";
+import axios from 'axios';
+
 
 function PinEntryPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const store = useContext(AppContext);
   const [pin, setPin] = useState(['', '', '', '', '', '']);
   const amount = location.state?.amount || '0';
 
@@ -21,15 +26,42 @@ function PinEntryPage() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      senderId: store.user._id,
+      receiverId: location.state?.userData.userId,
+      amount: amount
+    };
+    console.log('Payload: ', payload);
+    let pinString = pin.join('');
+
     if (pin.join('').length === 6) {
-      navigate('/payment-success', { state: { amount } });
+      console.log('pinString: ', pinString);
+      console.log('user.upiPin: ', store.user.upiPin);
+      if(Number(pinString) === store.user.upiPin){
+        try {
+          const { data } = await axios.post(
+            `${import.meta.env.VITE_BASEURL}/api/v1/send-money`, 
+            payload
+          );
+          if(data.success){
+            console.log(data.message);
+            navigate('/payment-success', { state: { amount } });
+          }
+        } catch(err) {
+          console.error(err);
+        }
+      }
+      else {
+        toast.error("Wrong Pin Entered");
+      }
     }
   };
 
   return (
     <div className="app-container flex flex-col h-full bg-gray-50">
+      <Toaster position="top-center" />
       <div className="sticky top-0 bg-purple-700 text-white z-10">
         <div className="flex items-center p-4">
           <button onClick={() => navigate(-1)} className="mr-3">

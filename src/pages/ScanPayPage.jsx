@@ -1,13 +1,16 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 import { ArrowLeft, QrCode, X, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 //import Webcam from 'react-webcam';
 import QrScanner from "react-qr-scanner";
 
+import { AppContext } from '../AppContext';
+
 
 function ScanPayPage() {
   const navigate = useNavigate();
+  const store = useContext(AppContext);
   const [showAmountInput, setShowAmountInput] = useState(false);
   const [amount, setAmount] = useState('');
   const webcamRef = useRef(null);
@@ -17,6 +20,12 @@ function ScanPayPage() {
     userId: ''
   });
 
+  useEffect(() => {
+    if(store.user) {
+      console.log('UserData: ', store.user);
+    }
+  }, []);
+
   const previewStyle = {
     height: 320,
     width: 320,
@@ -25,7 +34,7 @@ function ScanPayPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (amount) {
-      navigate('/pin-entry', { state: { amount } });
+      navigate('/pin-entry', { state: { userData, amount } });
     }
   };
 

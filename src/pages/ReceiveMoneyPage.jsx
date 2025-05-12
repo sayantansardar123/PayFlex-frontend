@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ArrowLeft, HelpCircle, Share2, Download, Copy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../AppContext';
+
 
 function ReceiveMoneyPage() {
   const navigate = useNavigate();
+  const store = useContext(AppContext);
+  const [qrString, setQrString] = useState('');
+
+  useEffect(() => {
+    if(store.user) {
+      setQrString(`upi=${store.user.upiId}%26userid=${store.user._id}`);
+    }
+  }, []);
   
   const handleDownloadQR = () => {
     const qrImage = document.getElementById('qr-code');
@@ -59,13 +69,13 @@ function ReceiveMoneyPage() {
           </div>
 
           <div className="flex justify-center mb-6">
-            <img
+            {qrString !== '' && <img
               id="qr-code"
-              src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=example@upi&pn=John%20Doe"
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrString}`}
               alt="QR Code"
               className="w-64 h-64"
               crossOrigin="anonymous"
-            />
+            />}
           </div>
 
           <div className="flex justify-between gap-4 mb-6">

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import AuthPage from './pages/AuthPage';
@@ -21,76 +21,59 @@ import BottomNavigation from './components/BottomNavigation';
 import QRScannerTest from './pages/QRScannerTest';
 
 import './index.css';
-import axios from 'axios';
+import { AppContext } from './AppContext';
 
 function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
+  const store = useContext(AppContext);
+  const token = localStorage.getItem('token');
 
   // Auto-redirect if token exists (user is already logged in) --
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    const fetchUserDetails = async () => {
-      try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_BASEURL}/api/v1/auth/userdetails`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'auth-token': token,
-            }
-          }
-        );
-        if(data) {
-          console.log('UserDetails: ', data.user);
-          if (!localStorage.getItem('userdata')){
-            localStorage.setItem('userdata', JSON.stringify(data.user));
-          }
-        }
-      } catch(err) {
-        console.error(err);
-      }
-    };
-
     if (token && location.pathname === '/') {
-      // Fetch UserDetails
-      fetchUserDetails();
       navigate('/home', { replace: true });
     }
   }, [location.pathname, navigate]);
 
+  useEffect(() => {
+    if(token) {
+      store.fetchUserDetails(token);
+    }
+  }, []);
+
   const showBottomNavPaths = ['/home', '/history', '/wallet', '/profile', '/finance'];
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="relative max-w-md w-full h-[780px] bg-white shadow-lg rounded-xl overflow-hidden">
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<AuthPage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/history" element={<HistoryPage />} />
-            <Route path="/scan-pay" element={<ScanPayPage />} />
-            <Route path="/pin-entry" element={<PinEntryPage />} />
-            <Route path="/payment-success" element={<PaymentSuccessPage />} />
-            <Route path="/wallet" element={<WalletPage />} />
-            <Route path="/check-balance" element={<CheckBalancePage />} />
-            <Route path="/bank-balance/:bankId" element={<BankBalancePage />} />
-            <Route path="/add-bank" element={<AddBankPage />} />
-            <Route path="/transfer" element={<TransferToContactPage />} />
-            <Route path="/chat-and-send/:contactId" element={<ChatAndSendPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/receive-money" element={<ReceiveMoneyPage />} />
-            <Route path="/manage-payments" element={<ManagePaymentsPage />} />
-            <Route path="/qrscanner-test" element={<QRScannerTest />} />
+    
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="relative max-w-md w-full h-[780px] bg-white shadow-lg rounded-xl overflow-hidden">
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={<AuthPage />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/history" element={<HistoryPage />} />
+              <Route path="/scan-pay" element={<ScanPayPage />} />
+              <Route path="/pin-entry" element={<PinEntryPage />} />
+              <Route path="/payment-success" element={<PaymentSuccessPage />} />
+              <Route path="/wallet" element={<WalletPage />} />
+              <Route path="/check-balance" element={<CheckBalancePage />} />
+              <Route path="/bank-balance/:bankId" element={<BankBalancePage />} />
+              <Route path="/add-bank" element={<AddBankPage />} />
+              <Route path="/transfer" element={<TransferToContactPage />} />
+              <Route path="/chat-and-send/:contactId" element={<ChatAndSendPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/receive-money" element={<ReceiveMoneyPage />} />
+              <Route path="/manage-payments" element={<ManagePaymentsPage />} />
+              <Route path="/qrscanner-test" element={<QRScannerTest />} />
 
-          </Routes>
-        </AnimatePresence>
+            </Routes>
+          </AnimatePresence>
 
-        {/* {location.pathname === '/home' && <FloatingActionButton />} */}
-        {showBottomNavPaths.includes(location.pathname) && <BottomNavigation />}
+          {/* {location.pathname === '/home' && <FloatingActionButton />} */}
+          {showBottomNavPaths.includes(location.pathname) && <BottomNavigation />}
+        </div>
       </div>
-    </div>
   );
 }
 
